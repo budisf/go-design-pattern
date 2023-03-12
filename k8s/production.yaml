@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: <PROJECT_NAME>
+ namespace: production
+ labels:
+   app: <PROJECT_NAME> #create deployment with label name
+spec:
+ replicas: 3
+ selector:
+   matchLabels:
+     app: <PROJECT_NAME>-pods #target pods with this label
+ template:
+   metadata:
+     labels:
+       app: <PROJECT_NAME>-pods #create pods with label name
+   spec:
+     containers:
+       - name: <PROJECT_NAME>-cont
+         image: asia.gcr.io/<GCP_PROJECT_NAME>/<PROJECT_NAME>/production:<VERSION>
+         imagePullPolicy: Always
+         ports:
+           - containerPort: 8080
+         envFrom:
+           - secretRef:
+              name: <PROJECT_NAME>.env
+         resources:
+          limits:
+            memory: 64Mi
+          requests:
+            cpu: 30m
+            memory: 64Mi              
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <PROJECT_NAME>
+  namespace: production
+  labels:
+   app: <PROJECT_NAME> #create services with label name
+spec:
+  selector:
+    app: <PROJECT_NAME>-pods #targeting service name
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

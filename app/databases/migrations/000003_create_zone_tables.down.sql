@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS group_territories;
+DROP TABLE IF EXISTS areas;
+DROP TABLE IF EXISTS regions;
